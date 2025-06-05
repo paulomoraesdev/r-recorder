@@ -33,7 +33,7 @@ export const composeStreams = (
   const recordingGenerator = new MediaStreamTrackGenerator({ kind: 'video' });
 
   if (screenshareProcessor && cameraProcessor) {
-    const screenshareReader = screenshareProcessor.readable.getReader();
+    const screenshareReader = screenshareProcessor.readable.getReader() as ReadableStreamDefaultReader<VideoFrame>;
 
     const canvas = new OffscreenCanvas(0, 0);
     const ctx = canvas.getContext('2d');
@@ -56,16 +56,9 @@ export const composeStreams = (
 
         if (latestScreenshareFrame) {
           if (!readingScreenshare) {
-            // Prevents queueing unnecessary promises while awaiting for
-            // the next screenshare frame
             readingScreenshare = true;
-
-            // Awaiting the read operation would block the recording until
-            // the next frame, which could come way later when the screenshare
-            // is fully static
-            screenshareReader.read().then(({ value: screenshareFrame }) => {
+            screenshareReader.read().then(({ value: screenshareFrame }: ReadableStreamReadResult<VideoFrame>) => {
               readingScreenshare = false;
-
               latestScreenshareFrame?.close();
               if (recordingGenerator.readyState === 'ended') {
                 screenshareFrame?.close();
@@ -75,8 +68,7 @@ export const composeStreams = (
             });
           }
         } else {
-          // Waits for the 1st frame to initialize the canvas dimensions
-          const { value: screenshareFrame } = await screenshareReader.read();
+          const { value: screenshareFrame } = await screenshareReader.read() as ReadableStreamReadResult<VideoFrame>;
           latestScreenshareFrame = screenshareFrame;
         }
         if (latestScreenshareFrame) {
@@ -133,3 +125,4 @@ export const composeStreams = (
 
   return recordingStream;
 };
+/// <reference types="dom-mediacapture-transform" />

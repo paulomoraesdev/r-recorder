@@ -1,13 +1,16 @@
 import { resolve } from 'path';
 
-import react from '@vitejs/plugin-react-swc';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+import sveltePreprocess from 'svelte-preprocess';
 import { defineConfig } from 'vite';
 import type { ViteDevServer } from 'vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
+    svelte({
+      preprocess: sveltePreprocess(),
+    }),
     {
       name: 'configure-response-headers',
       configureServer: (server: ViteDevServer) => {
@@ -21,13 +24,17 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      features: resolve(__dirname, 'src/features'),
       components: resolve(__dirname, 'src/components'),
       hooks: resolve(__dirname, 'src/hooks'),
-      contexts: resolve(__dirname, 'src/contexts'),
       services: resolve(__dirname, 'src/services'),
-      styles: resolve(__dirname, 'src/styles'),
       assets: resolve(__dirname, 'src/assets'),
+    },
+  },
+  build: {
+    lib: {
+      entry: resolve(__dirname, 'src/main.ts'),
+      name: 'Recorder',
+      fileName: 'recorder',
     },
   },
 });

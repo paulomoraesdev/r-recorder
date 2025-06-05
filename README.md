@@ -85,6 +85,16 @@ Excited to dive into the code and make this app even cooler? To get started, fol
 
 6. **Create a Pull Request:** Once you're happy with your changes, create a pull request on the main Record repository. We'll review your contribution and merge it if everything looks good!
 
+## Usage
+
+After running `yarn build` you can import the generated component:
+
+```ts
+import Recorder from './dist/recorder.js';
+
+const app = new Recorder({ target: document.body });
+```
+
 ## Credits
 
 This project is a fork of the original [Recorder](https://github.com/contrastio/recorder) by [Contrast](https://getcontrast.io). This fork adds a number of features across camera layout, teleprompting, MP4 conversion and others.
